@@ -16,9 +16,7 @@ object HWImmutable {
         case true if ch == str(idx) => result :+ (cnt + 1, ch)
         case true => result :+ (cnt, ch) :+ (1, str(idx))
         case false if ch == str(idx) => f(idx + 1, ch, cnt + 1, result)
-        case false => {
-          f(idx + 1, str(idx), 1, result :+ (cnt, ch))
-        }
+        case false => f(idx + 1, str(idx), 1, result :+ (cnt, ch))
       }
     }
 
