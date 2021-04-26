@@ -1,9 +1,9 @@
-package scala2021
+package scala2021.jatadjanov.task01
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object Task1 {
+object HW {
 
   private val vAddsShow = mutable.HashMap.empty[String, ShowCount]
   private val rootName = ""

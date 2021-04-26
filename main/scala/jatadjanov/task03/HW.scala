@@ -1,8 +1,9 @@
-package scala2021
+package scala2021.jatadjanov.task03
+
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.ArrayBuffer.empty
 
-object Task3 {
+object HW {
 
   def encodeDirect(str: List[Char]): List[(Int, Char)] = {
     assert(str.nonEmpty, "Please enter symbols")
@@ -10,7 +11,7 @@ object Task3 {
     val result: ArrayBuffer[(Int, Char)] = empty
     val n = str.length - 1
 
-    def f (idx: Int, ch: Char, cnt: Int): Unit = {
+    def f(idx: Int, ch: Char, cnt: Int): Unit = {
       idx == n match {
         case true if ch == str(idx) => result.append((cnt + 1, ch))
         case true => {
