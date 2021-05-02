@@ -6,6 +6,9 @@ import scala.annotation.tailrec
 object HWImmutable {
 
   def checkCoins(vCoins: List[Int], total: Int): Boolean = {
+    assert(total > 0, "Total should be greater than Zero")
+    assert(vCoins != null && vCoins.nonEmpty, "The coins collection should not be empty")
+
     val coins = vCoins.sortWith((x, y) => x < y)
     val res = true :: List.fill(coins.head - 1)(false)
 
@@ -30,7 +33,7 @@ object HWImmutable {
 
   def main(args: Array[String]): Unit = {
 
-  val coins = List(2, 4);
-    println(checkCoins(coins, 11))
+  val coins = List.empty;
+    println(checkCoins(null, 5))
   }
 }
