@@ -83,22 +83,26 @@ object HW {
 
   // Найти имя менеджера департамента, в котором работает сотрудник по имени сотрудника
   def findManagerName(employee: String): Option[String] = {
-    findManagerNameOrError(employee) match {
-      case Left(_) => None
-      case Right(r) => Some(r)
+    val r = for {
+      emp <- employees if emp.name == employee
+      dep <- departments if dep.id == emp.departmentId
+      man <- managers if man.department == dep.name
+      owner <- employees if owner.id == man.employeeId
+    } yield owner.name
+
+    r.nonEmpty match {
+      case true => Some(r.head)
+      case _ => None
     }
   }
 
   // Найти имя менеджера по имени сотрудника, в случае ошибки в данных - указать что именно не так
   def findManagerNameOrError(employee: String): Either[String, String] = {
-    findEmployeeDepartmentIdByName(employee) match {
-      case Left(l) => Left(l)
-      case Right(depId) =>
-        getDepartmentNameById(depId) match {
-          case Left(l) => Left(l)
-          case Right(depName) => getManagerNameByDepartmentName(depName)
-        }
-    }
+    for {
+      emp <- HW.findEmployeeDepartmentIdByName(employee)
+      dep <- HW.getDepartmentNameById(emp)
+      man <- HW.getManagerNameByDepartmentName(dep)
+    } yield man
   }
 
   val NOT_FOUND: String = "Not Found"
@@ -129,6 +133,13 @@ object HW {
     println(findManagerNameOrError("Steve"))
     println(findManagerNameOrErrorAsync("Mark"))
     println(findEmployeeManagers)
+    println("John: " + findManagerName("John"))
+    println("Steve: " + findManagerName("Steve"))
+    println("Mark: " + findManagerName("Mark"))
+    println("Igor: " + findManagerName("Igor"))
+    println("Christy: " + findManagerName("Christy"))
+    println("Naveen: " + findManagerName("Naveen"))
+    println("Megan: " + findManagerName("Megan"))
+
   }
 }
-
