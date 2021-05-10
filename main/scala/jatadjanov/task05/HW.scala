@@ -32,53 +32,36 @@ object HW {
   )
 
   def findEmployeeDepartmentIdByName(employee: String): Either[String, Int] = {
-    val emp = employees.find(p => p.name == employee)
-    if (emp.nonEmpty) {
-      Right(emp.get.departmentId)
-    } else {
-      Left(s"Employee By Name: $employee not found")
-    }
+    employees.filter(p => p.name == employee).
+      collectFirst { case x => Right(x.departmentId) }.
+      getOrElse(Left(s"Employee By Name: $employee not found"))
   }
 
   def findEmployeeDepartmentByName(employee: String): Either[String, Department] = {
-    val emp = employees.find(p => p.name == employee)
-    if (emp.nonEmpty) {
-      getDepartmentById(emp.get.departmentId)
-    } else {
-      Left(s"Employee By Name: $employee not found")
-    }
+    employees.filter(p => p.name == employee).
+      collectFirst{case x => getDepartmentById(x.departmentId)}.
+      getOrElse(Left(s"Employee By Name: $employee not found"))
   }
 
   def getDepartmentById(departmentId: Int) =  {
-    val department = departments.find(d => d.id == departmentId)
-    if (department.nonEmpty) {
-      Right(department.get)
-    } else {
-      Left(s"Department By Id: $departmentId not found")
-    }
+    departments.filter(d => d.id == departmentId).
+      collectFirst{case x => Right(x)}.
+      getOrElse(Left(s"Department By Id: $departmentId not found"))
   }
 
   def getDepartmentNameById(departmentId: Int): Either[String, String] =  {
-    val department = departments.find(d => d.id == departmentId)
-    if (department.nonEmpty) {
-      Right(department.get.name)
-    } else {
-      Left(s"Department By Id: $departmentId not found")
-    }
+    departments.filter(d => d.id == departmentId).
+      collectFirst{case x => Right(x.name)}.
+      getOrElse(Left(s"Department By Id: $departmentId not found"))
   }
 
   def getManagerNameByDepartmentName(departmentName: String): Either[String, String] = {
-    val manager = managers.find(m => m.department == departmentName)
-    if (manager.isEmpty) {
-      Left(s"Manager by Department: $departmentName not found")
-    } else {
-      val emp = employees.find(e => e.id == manager.get.employeeId)
-      if (emp.nonEmpty) {
-        Right(emp.get.name)
-      } else {
-        Left(s"Employee by Id: $manager.get.employeeId not found")
-      }
-    }
+    managers.filter(m => m.department == departmentName).
+      collectFirst{case x =>
+        employees.filter(e => e.id == x.employeeId).
+          collectFirst {case y => Right(y.name) }.
+          getOrElse(Left(s"Employee by Id: $x.employeeId not found"))
+      }.getOrElse(Left(s"Manager by Department: $departmentName not found"))
   }
 
   // Найти имя менеджера департамента, в котором работает сотрудник по имени сотрудника
