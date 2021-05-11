@@ -57,17 +57,23 @@ object HW {
   }
 
   def validateFuture(p: Person): Unit = {
-    val f = Future {
-      validateName(p)
-      validateEmail(p)
-      validateAge(p)
-      validateHeight(p)
+    val v = for {
+      n <- Future (validateName(p))
+      e <- Future (validateEmail(p))
+      a <- Future (validateAge(p))
+      h <- Future (validateHeight(p))
+    } yield List(n, e, a, h)
+
+    v.onComplete {
+      case Success(value) => {
+        val res = value.filter(f => f != Right(true)).map(f => f.left.getOrElse()).toList
+        println(s"Validation result = $res")
+      }
+      case Failure(e) => e.printStackTrace
     }
 
-    f onComplete {
-      case Success(idx) => println(idx)
-      case Failure(t) => println("Could not process file: " + t.getMessage)
-    }
+    Thread.sleep(1000)
+
   }
 
   def main(args: Array[String]): Unit = {
@@ -77,5 +83,7 @@ object HW {
       filter(f => f != Right(true)).map(f => f.left.getOrElse()).toList)
 
     validateFuture(p)
+
   }
+
 }
